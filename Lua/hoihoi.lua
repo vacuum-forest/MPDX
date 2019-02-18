@@ -3,9 +3,11 @@
 hoihoi.lua
 by Kuu-rin (2019)
 
-This script contains debugging functions, including logging and display for various tables.
+This script contains debugging functions, including logging and display for various tables. 
 
-	jot(string)
+Only works when loaded from SOLO LUA.
+
+	logWrite(string)
 	Write string to debugMPDX.txt, prefaced with ticks elapsed, terminates with line break (saved at end of game)
 
 	dumpScenery()
