@@ -172,7 +172,7 @@ function initDoors()
 	DoorSetTypes["swing double c"].collision = nil
 	
 	DoorSetTypes["slide automatic"] = {}
-	DoorSetTypes["slide automatic"].class = "mirror"
+	DoorSetTypes["slide automatic"].class = "double"
 	DoorSetTypes["slide automatic"].doors = {"slide auto l", "slide auto r"}
 	DoorSetTypes["slide automatic"].frame = "frame slide auto"
 	DoorSetTypes["slide automatic"].collision = {0.625, 0.25}
@@ -249,14 +249,15 @@ function installDoor(type, parent, enable, lock, keyset)
 	
 	-- Offset double door positions
 	
-	if parent.class == "double" or parent.class == "mirror" then
+	if parent.class == "double" then
 		
-		if door.motion == "slide" and door.type.offset then
+		if door.type.offset then
 			
-			
+			-- Flip right door
 			if door.orientation == "right" then
 				door.facing = door.facing + 180
 				door.object.facing = door.facing
+				door.isReversed = true
 			end
 			
 			local dt = door.facing - 90
@@ -265,11 +266,9 @@ function installDoor(type, parent, enable, lock, keyset)
 			door.y = door.y + ny
 			door.object:position(door.x, door.y, door.z, door.polygon)
 			
-			door.isReversed = true
-			
 		else
 		
-			local dt
+			local dt -- Direction of travel
 			if door.orientation == "left" then
 				dt = door.facing + 90
 			else
@@ -286,6 +285,8 @@ function installDoor(type, parent, enable, lock, keyset)
 		end
 		
 	end
+	
+	-- Establish motion parameters
 	
 	if door.motion == "swing" then -- Set up hinge position, angles for swingers
 		
@@ -317,23 +318,22 @@ function installDoor(type, parent, enable, lock, keyset)
 		end
 		
 		local ox, oy
+		
+		door.xClosed = door.x
+		door.yClosed = door.y
+		
 		if door.orientation == "left" then
-			door.xClosed = door.x
-			door.yClosed = door.y
 			ox, oy = radToCart(door.facing + 90, openDistance)
-			door.xOpen = door.x + ox
-			door.yOpen = door.y + oy
 		else
-			door.xClosed = door.x
-			door.yClosed = door.y
 			if door.isReversed then
 				ox, oy = radToCart(door.facing + 90, openDistance)
 			else
 				ox, oy = radToCart(door.facing - 90, openDistance)
 			end
-			door.xOpen = door.x + ox
-			door.yOpen = door.y + oy
 		end
+		
+		door.xOpen = door.x + ox
+		door.yOpen = door.y + oy
 		
 	else -- Something went horribly wrong!
 		
@@ -394,7 +394,7 @@ function Doors:new()
 end
 	
 
-function Doors:getDirection()
+function Doors:getDirection(angle)
 	
 	local dir = 1
 	
@@ -408,6 +408,10 @@ function Doors:getDirection()
 		end
 	else
 		dir = 0
+	end
+	
+	if self.isReversed then
+		dir = dir * -1
 	end
 
 	return dir
@@ -443,7 +447,7 @@ end
 function Doors:getLinearDeflection()
 	
 	local deltaX, deltaY
-	local sweepX = math.abs(self.xOpen - self.xClosed)
+	local sweepX = math.abs(self.xOpen - self.xClosed)	-- Total Deflections
 	local sweepY = math.abs(self.yOpen - self.yClosed)
 	
 	if self.state == "opening" then
@@ -456,6 +460,7 @@ function Doors:getLinearDeflection()
 		return
 	end
 	
+	-- Motion Speed Easing
 	local defX, defY
 	
 	if deltaX >= Doors.minLD then
@@ -520,6 +525,10 @@ function Doors:move()
 		
 	-- Sliding doors
 	else
+	
+		if self.facing >= 90 and self.facing < 270 then
+			direction = direction * -1
+		end
 	
 		local dx, dy = self:getLinearDeflection()
 		
@@ -723,12 +732,16 @@ function Doors:interaction()
 	elseif self.state == "closed" then
 		
 		if self.type.opens == "both" then
+			
 			-- Don't worry!
+			
 		else
+			
 			if self:checkPlayerSide() ~= self.type.opens then
 				Players[0]:print("You can't open it from this side.")
 				return
 			end
+			
 		end
 		
 		if self.lock ~= "none" then
@@ -744,6 +757,8 @@ function Doors:interaction()
 	
 	elseif self.state == "open" then
 		
+		-- Don't worry!
+		
 	else
 		
 		return
@@ -756,8 +771,6 @@ end
 
 
 function Doors:noise(sound)
-
-	Players.print("sounds!")
 
 	local canHasSound = false
 	for i = 1, # Doors.noises, 1 do
@@ -832,7 +845,7 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 		table.insert(Doors, door)
 	end
 	
-	-- Optional Colliders
+	-- Optional Extra Colliders
 	if doorSet.type.collision then
 		
 		local cOffset = doorSet.type.collision[1]
@@ -866,6 +879,13 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 			
 		end
 		
+	end
+	
+	-- Sliding Auto Door Opener
+	if type == "slide automatic" then
+		local opener = Monsters.new(x, y, z + 0.75, polygon, MonsterTypes["tiny yeti"])
+		opener.active = true
+		opener._parent = doorSet
 	end
 	
 	-- Linkback from polygon
@@ -961,4 +981,12 @@ function doorsIdleUpkeep()
 		end
 	end
 	
+end
+
+function doorsPDamagedUpkeep(damage_type)
+	
+	if damage_type == "yeti claws" then
+		aggressor_monster._parent:openSesame()
+	end
+
 end

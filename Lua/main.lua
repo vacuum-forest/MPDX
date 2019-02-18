@@ -1,6 +1,10 @@
 Triggers = {}
 
-CollectionsUsed = { 25 } -- Damaged goods collection found here!
+if # Media > 0 then
+	CollectionsUsed = { 11, 21, 23, 25 }
+else
+	CollectionsUsed = { 11, 23, 25 }
+end
 
 function initSceneryTypes()
 
@@ -91,9 +95,6 @@ function Triggers.init(restoring_game)
 	
 	-- Load up Lua modules
 	
-	--functions_debug = loadfile("MPDX/Data/Lua/hoihoi.lua")			-- Debugging, logging
-	--functions_debug()
-	
 	functions_helpers = loadfile("MPDX/Data/Lua/helpers.lua")		-- Assorted Hors d'oeuvres, helper functions
 	functions_helpers()
 	
@@ -105,11 +106,6 @@ function Triggers.init(restoring_game)
 	
 	functions_transit = loadfile("MPDX/Data/Lua/transit.lua")		-- Intralevel transit
 	functions_transit()
-	
-	--[[
-	functions_inventory = loadfile("MPDX/Data/Lua/inventory.lua")
-	functions_inventory()
-	--]]
 	
 	functions_cameras = loadfile("MPDX/Data/Lua/cameras.lua")		-- Cameras
 	functions_cameras()
@@ -128,18 +124,36 @@ function Triggers.init(restoring_game)
 	
 	-- Initialize tables (in the proper order!)
 	
-	--initHoihoi()
+	initSceneryTypes()
 	initFaders()
 	initPlayer()
 	initTransit()
-	initSceneryTypes()
 	initScenery()
 	initCameras()
 	initDoors()
 	initKeys()
 	initTerminals()
 	initSwitches()
-	--initInventory()
+	
+end
+
+function Triggers.projectile_detonated(type, owner, polygon, x, y, z)
+
+
+	
+end
+
+function Triggers.monster_damaged(monster, aggressor_monster, damage_type, damage_amount, projectile)
+
+
+	
+end
+
+function Triggers.player_damaged(victim, aggressor_player, aggressor_monster, damage_type, damage_amount, projectile)
+	
+	playerPDamagedUpkeep(victim, aggressor_player, aggressor_monster, damage_type, damage_amount, projectile)
+	
+	doorsPDamagedUpkeep(aggressor_monster, damage_type)
 	
 end
 

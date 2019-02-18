@@ -161,7 +161,7 @@ function Player.defrost()
 	
 end
 
-function Triggers.player_damaged(victim, aggressor_player, aggressor_monster, damage_type, damage_amount, projectile)
+function playerPDamagedUpkeep(victim, aggressor_player, aggressor_monster, damage_type, damage_amount, projectile)
 
 	if Player.mode ~= "default" then
 		if Player.camera.current then
@@ -258,7 +258,7 @@ function Player.isRunning()
 	local d = not Player.isFrozen
 	
 	if a and b and c and d then
-		return true
+		return false	--DEBUG
 	else
 		return false
 	end
