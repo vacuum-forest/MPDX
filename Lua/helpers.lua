@@ -58,6 +58,20 @@ function getBearing(from, to)
 	
 end
 
+function normalizeAngle(angle)
+
+	if math.abs(angle) >= 360 then
+		angle = angle % 360
+	end
+	
+	if angle < 0 then
+		angle = angle + 360
+	end
+	
+	return angle
+	
+end
+
 -- Takes a comma separated value string and transfers values into Lua table (as strings).
 -- Use == "true" and tonumber() to get boolean and numerical values, or suffer type mismatches.
 -- Use semicolons inside of a cell to delineate a subtable.
@@ -107,4 +121,46 @@ function swapScenery(oldBusted, newType)
 end
 	
 	
+function getPolyZSpan(polygon)
 	
+	return polygon.ceiling.height - polygon.floor.height
+	
+end
+
+function getSidePart(side, z) -- Lovingly cribbed from VML (Irons/Smith) [presumably] by way of Vasara (Hopper/Ares Ex Machina)? Hugs and kisses!
+
+    if side.type == "full" then
+       local opposite_polygon
+       if side.line.clockwise_side == side then
+          opposite_polygon = side.line.counterclockwise_polygon
+       else
+          opposite_polygon = side.line.clockwise_polygon
+       end
+       if opposite_polygon then
+          return "transparent"
+       else
+          return "primary"
+       end
+    elseif side.type == "high" then
+       if z > side.line.lowest_adjacent_ceiling then
+          return "primary"
+       else
+          return "transparent"
+       end
+    elseif side.type == "low" then
+       if z < side.line.highest_adjacent_floor then
+          return "primary"
+       else
+          return "transparent"
+       end
+    else
+       if z > side.line.lowest_adjacent_ceiling then
+          return "primary"
+       elseif z < side.line.highest_adjacent_floor then
+          return "secondary"
+       else
+          return "transparent"
+       end
+    end
+	
+end

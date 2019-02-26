@@ -1,7 +1,12 @@
--- Set up for doors.lua, call this in Triggers.init()
+--[[	Doors.lua (MPDX) by Ku-rin
+		
+		This script handles the interaction and mechanics of 3d scenery doors.
+	
+]]
+
 function initDoors()
 	
-	-- Load all door types --
+	-- Door types --
 
 	DoorTypes = {}
 	
@@ -16,8 +21,8 @@ function initDoors()
 	DoorTypes["swing 1a l"].orientation = "left"
 	DoorTypes["swing 1a l"].halfWidth = 0.247
 	DoorTypes["swing 1a l"].halfThick = 0.02725
-	DoorTypes["swing 1a l"].hingeAngle = 6.32101859
-	DoorTypes["swing 1a l"].hingeRadius = 0.24750467
+	DoorTypes["swing 1a l"].hingeAngle = 6.32101859		--Angle from hinge to door object center
+	DoorTypes["swing 1a l"].hingeRadius = 0.24750467	--Distance from hinge to door object center
 	DoorTypes["swing 1a l"].closeDelay = -1
 	DoorTypes["swing 1a l"].object = "door swing 1a l"
 	DoorTypes["swing 1a l"].offset = nil
@@ -131,7 +136,7 @@ function initDoors()
 	DoorTypes["slide manual r"].offset = 0.21075
 
 	
-	-- Load all doorset types --
+	-- Doorset types --
 	
 	DoorSetTypes = {}
 	
@@ -189,7 +194,6 @@ function initDoors()
 	setupDoorways()
 	
 end
-
 
 
 -- Doors: The actual door object --
@@ -383,17 +387,7 @@ function installDoor(type, parent, enable, lock, keyset)
 	
 end
 
-
-function Doors:new()
 	
-	o = {}
-    setmetatable(o, self)
-    self.__index = self
-	return o
-	
-end
-	
-
 function Doors:getDirection(angle)
 	
 	local dir = 1
@@ -791,6 +785,15 @@ function Doors:noise(sound)
 end
 
 
+function Doors:new()
+	
+	o = {}
+    setmetatable(o, self)
+    self.__index = self
+	return o
+	
+end
+
 
 -- DoorSets: Includes a doorframe (optional), and at least one door object --
 
@@ -883,7 +886,7 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 	
 	-- Sliding Auto Door Opener
 	if type == "slide automatic" then
-		local opener = Monsters.new(x, y, z + 0.75, polygon, MonsterTypes["tiny yeti"])
+		local opener = Monsters.new(x, y, z + 0.75, polygon, MonsterTypes["door daemon"])
 		opener.active = true
 		opener._parent = doorSet
 	end
@@ -895,19 +898,12 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 
 end
 
-
-function DoorSets:new()
-
-	o = {}
-    setmetatable(o, self)
-    self.__index = self
-	return o
-	
-end
-
-
 -- Trigger a doorset to open its doors simultaneously
 function DoorSets:openSesame()
+
+	if not self.enable then
+		return
+	end
 
 	for i = 1, # self.doors, 1 do
 	
@@ -919,6 +915,14 @@ function DoorSets:openSesame()
 	
 end
 
+function DoorSets:new()
+
+	o = {}
+    setmetatable(o, self)
+    self.__index = self
+	return o
+	
+end
 
 
 -- Already called inside of initDoors()
@@ -983,9 +987,20 @@ function doorsIdleUpkeep()
 	
 end
 
-function doorsPDamagedUpkeep(damage_type)
+-- Watch for automatic door openings...
+-- Note: Monsters immune to Flickta Claw damage will not trigger auto-doors.
+
+function doorsMDamagedUpkeep(aggressor_monster, damage_type)
 	
-	if damage_type == "yeti claws" then
+	if damage_type == "sensor" and aggressor_monster.type == "door daemon" then
+		aggressor_monster._parent:openSesame()
+	end
+
+end
+
+function doorsPDamagedUpkeep(aggressor_monster, damage_type)
+	
+	if damage_type == "sensor" and aggressor_monster.type == "door daemon" then
 		aggressor_monster._parent:openSesame()
 	end
 

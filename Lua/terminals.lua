@@ -2,35 +2,23 @@ function initTerminals()
 
 	TermTypes = {}
 	
-	local sourceTable = io.open("MPDX/Data/Tables/terminaltypes.csv", "r")
+	TermTypes["large terminal"] = {}
+	TermTypes["large terminal"].object = {}
+	TermTypes["large terminal"].object.active = "terminal 1"
+	TermTypes["large terminal"].object.inactive = "terminal 1 inactive"
+	TermTypes["large terminal"].object.locked = "terminal 1"
+	TermTypes["large terminal"].object.dead = "terminal 1 damaged"
 	
-	for i = 0, 1, 1 do
-		
-		local filter = filterCSVLine(sourceTable:read())
-		
-		local set = {}
-		
-		local name = filter[1]
-		
-		TermTypes[name] = {}
-		
-		set.object = {}
-		
-		set.object.active = filter[2]
-		set.object.inactive = filter[3]
-		set.object.locked = filter[4]
-		set.object.dead = filter[5]
-		
-		TermTypes[name] = set
-		
-	end
-	
-	sourceTable:close()
+	TermTypes["small terminal"] = {}
+	TermTypes["small terminal"].object = {}
+	TermTypes["small terminal"].object.active = "terminal 2"
+	TermTypes["small terminal"].object.inactive = "terminal 2 inactive"
+	TermTypes["small terminal"].object.locked = "terminal 2"
+	TermTypes["small terminal"].object.dead = "terminal 2 damaged"
 	
 	setUpTerminals()
 	
 end
-
 
 Terms = {}
 Terms.list = {}
@@ -49,6 +37,7 @@ function installTerminal(id, type, status, x, y, height, facing, polygon)
 	term.polygon = polygon
 	
 	term.object = Scenery.new(x, y, term.height, term.polygon, TermTypes[type].object[status])
+	term.object:position(x, y, term.height, term.polygon)
 	term.object.facing = term.facing
 	term.object._parent = term
 	

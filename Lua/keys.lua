@@ -1,28 +1,36 @@
+--[[	Keys.lua (MPDX) by Ku-rin
+		
+		This script handles keys used to control access to doors and other interactables.
+	
+]]
+
+Keys = {}
+
 function initKeys()
 	
-	Players.print("Initializing Keys...")
-
-	Keys = {}
-	
-	local sourceTable = io.open("MPDX/Data/Tables/keys.csv", "r")
-	
-	for i = 0, 2, 1 do
+	if not Player.me._keys then
 		
-		local filter = filterCSVLine(sourceTable:read())
-		
-		local set = {}
-		
-		local name = filter[1]
-		
-		Keys[name] = {}
-		
-		set.owner = filter[2] or "nobody"
-		set.description = filter[3] or "It's a key."
-		
-		Keys[name] = set
+		Player.me._keys = {}
 		
 	end
 	
-	sourceTable:close()
+end
+
+function playerHasKey(key)
+
+	local found = false
+
+	for k,v in ipairs(Player.me._keys) do
+		
+		if v == key then
+			
+			found = true
+			break
+			
+		end
+		
+	end
+	
+	return found
 	
 end

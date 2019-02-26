@@ -21,9 +21,6 @@ function initCameras()
 	CameraTypes[3].mnemonic = "Nightvision Wide"
 	CameraTypes[3].fisheye = true
 	CameraTypes[3].predator = true
-	
-	FadeTypes["dodge yellow"].mnemonic = "camera normal"
-	FadeTypes["burn green"].mnemonic = "camera nightvision"
 
 	setUpCameras()
 
@@ -164,7 +161,7 @@ if Player.camera.current then
 			
 		else
 		
-			Player.me:fade_screen("camera normal")
+			Player.me:fade_screen("camera plain")
 			
 		end
 		

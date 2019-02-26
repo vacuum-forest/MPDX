@@ -21,6 +21,11 @@ function initPlayer()
 	Player.camera = {}
 	Player.camera.current = nil
 	
+	Player.jump = {}
+	Player.jump.count = 0
+	Player.jump.maxCount = 30
+	Player.jump.power = 0.05
+	
 	-- Set up player parameters...
 	Player.parameters = {}
 
@@ -175,6 +180,36 @@ function playerPDamagedUpkeep(victim, aggressor_player, aggressor_monster, damag
 		end
 	end
 	
+	-- Camera flash blindness!
+	
+	if damage_type == "sensor" and projectile.type == "camera flash" then
+	
+		local pPos = {}
+		pPos.x = Player.me.x
+		pPos.y = Player.me.y
+		
+		local mPos = {}
+		mPos.x = aggressor_monster.x
+		mPos.y = aggressor_monster.y
+		
+		local bearing = math.floor(getBearing(pPos, mPos) - Player.me.direction)
+		Players.print(bearing)
+		if math.abs(bearing) <= 50 then
+			Player.me:fade_screen("flash")
+		end
+		
+		--[[
+		if bearing < 0 then
+			bearing = bearing + 360
+		end
+		local side = (bearing + 90) % 360
+		if side <= 180 then
+			Player.me:fade_screen("flash")
+		end
+		]]
+		
+	end
+	
 	if damage_amount * 1000 < Player.parameters.HP.target + 5000 then
 		
 		if Player.me.life > -10 then
@@ -200,25 +235,55 @@ end
 
 function playerIdleUpkeep()
 
-	Player.speedCheck()
+	--Player.speedCheck()
 	
-	Player.updateParameters()
+	--Player.updateParameters()
 
 	if Player.me.action_flags.action_trigger then
-		if Player.mode == "default" or Player.mode == "camera" then
+		
+		if Player.mode == "default" then
+			
 			local o, x, y, z, polygon = Player.me:find_target()
+
 			local distance = getDistance(x, y, z, Player.me)
+			
 			if distance <= 1 then
+				
 				if is_scenery(o) then
+					
 					if o._parent then
 						o._parent:interaction()
 					end
+					
+				elseif is_polygon_floor(o) or is_polygon_ceiling(o) or is_side(o) then
+					
+					if not Features.evaluate(o, x, y, z, polygon) then
+						
+						Players.print("No Features.")
+						
+						if not motions.evaluate(o, x, y, z, polygon) then
+							
+							Players.print("No motions.")
+							
+						end
+						
+					end
+					
 				end
+				
 			end
+			
+		elseif Player.mode == "camera" then
+			
+			Player.camera.current:interaction(true)
+			
 		elseif Player.mode == "resting" then
+			
 			Player.wakeUp()
+			
 		end
-	end 
+		
+	end
 	
 end
 
