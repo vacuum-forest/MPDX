@@ -21,10 +21,17 @@ function initPlayer()
 	Player.camera = {}
 	Player.camera.current = nil
 	
+	Player.lastTargetDistance = nil
+	
 	Player.jump = {}
 	Player.jump.count = 0
 	Player.jump.maxCount = 30
 	Player.jump.power = 0.05
+	
+	Player.ladder = {}
+	Player.ladder.climbing = false
+	Player.ladder.id = nil
+	Player.ladder.z = nil
 	
 	-- Set up player parameters...
 	Player.parameters = {}
@@ -193,7 +200,7 @@ function playerPDamagedUpkeep(victim, aggressor_player, aggressor_monster, damag
 		mPos.y = aggressor_monster.y
 		
 		local bearing = math.floor(getBearing(pPos, mPos) - Player.me.direction)
-		Players.print(bearing)
+
 		if math.abs(bearing) <= 50 then
 			Player.me:fade_screen("flash")
 		end
@@ -238,6 +245,18 @@ function playerIdleUpkeep()
 	--Player.speedCheck()
 	
 	--Player.updateParameters()
+	
+	if Player.ladder.climbing then
+	
+		motions.ladder("idle")
+		
+	end
+	
+	if motions.transit.active then
+	
+		motions.transition()
+		
+	end
 
 	if Player.me.action_flags.action_trigger then
 		
@@ -247,7 +266,11 @@ function playerIdleUpkeep()
 
 			local distance = getDistance(x, y, z, Player.me)
 			
+			Player.lastTargetDistance = distance
+			
 			if distance <= 1 then
+				
+				Players.print(o)
 				
 				if is_scenery(o) then
 					
@@ -290,6 +313,12 @@ end
 function playerPostIdleUpkeep()
 	
 	if Player.isFrozen then Player.frozen() end
+	
+	if Player.ladder.climbing then
+	
+		motions.ladder("post")
+		
+	end
 	
 end
 

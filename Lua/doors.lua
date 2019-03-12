@@ -15,6 +15,18 @@ function initDoors()
 	DoorTypes.collider.maxCount = 5
 	DoorTypes.collider.object = "door collision cylinder"
 
+	DoorTypes["hatch 1"] = {}
+	DoorTypes["hatch 1"].opens = "both"
+	DoorTypes["hatch 1"].motion = "swing"
+	DoorTypes["hatch 1"].orientation = "left"
+	DoorTypes["hatch 1"].halfWidth = 0.22
+	DoorTypes["hatch 1"].halfThick = 0.037
+	DoorTypes["hatch 1"].hingeAngle = 9.54676692	--Angle from hinge to door object center
+	DoorTypes["hatch 1"].hingeRadius = 0.22308967	--Distance from hinge to door object center
+	DoorTypes["hatch 1"].closeDelay = -1
+	DoorTypes["hatch 1"].object = "door swing hatch"
+	DoorTypes["hatch 1"].offset = nil
+
 	DoorTypes["swing 1a l"] = {}
 	DoorTypes["swing 1a l"].opens = "both"
 	DoorTypes["swing 1a l"].motion = "swing"
@@ -139,6 +151,12 @@ function initDoors()
 	-- Doorset types --
 	
 	DoorSetTypes = {}
+	
+	DoorSetTypes["swing single hatch"] = {}
+	DoorSetTypes["swing single hatch"].class = "single"
+	DoorSetTypes["swing single hatch"].doors = {"hatch 1"}
+	DoorSetTypes["swing single hatch"].frame = "frame swing hatch"
+	DoorSetTypes["swing single hatch"].collision = nil
 	
 	DoorSetTypes["swing single a"] = {}
 	DoorSetTypes["swing single a"].class = "single"
@@ -613,9 +631,11 @@ function Doors:stop()
 	-- Update door object polygon for superior rendering!
 	for p in Polygons() do
 		if p:contains(self.x, self.y) then
-			self.polygon = p
-			self.object:position(self.x, self.y, self.z, self.polygon)
-			break
+			if self.z < p.ceiling.z and self.z >= p.floor.z then
+				self.polygon = p
+				self.object:position(self.x, self.y, self.z, self.polygon)
+				break
+			end
 		end
 	end
 	

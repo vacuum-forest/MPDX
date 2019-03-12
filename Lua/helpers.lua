@@ -58,6 +58,20 @@ function getBearing(from, to)
 	
 end
 
+function getPolygonAtLoc(x, y, z)
+
+	for p in Polygons() do
+		
+		if p:contains(x, y, z) then
+			return p
+		end
+		
+		return nil
+		
+	end
+	
+end
+
 function normalizeAngle(angle)
 
 	if math.abs(angle) >= 360 then

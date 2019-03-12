@@ -75,7 +75,5 @@ function Medias.updateFog()
 	Level.underwater_fog.color.g = media.haze.g * floorLight * depthMod
 	Level.underwater_fog.color.b = media.haze.b * floorLight * depthMod
 	Level.underwater_fog.depth = math.max(media.haze.d.max * (1 - floorLight) * depthMod, media.haze.d.min)
-	
-	Players.print(floorLight * depthMod)
 
 end

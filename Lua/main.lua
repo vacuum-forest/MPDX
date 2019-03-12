@@ -1,9 +1,9 @@
 Triggers = {}
 
 if # Media > 0 then
-	CollectionsUsed = { 11, 21, 23, 24, 25 }
+	CollectionsUsed = { 11, 21, 23, 24, 25, 26 }
 else
-	CollectionsUsed = { 11, 23, 24, 25 }
+	CollectionsUsed = { 11, 23, 24, 25, 26 }
 end
 
 Game.proper_item_accounting = true
@@ -72,6 +72,9 @@ function Triggers.init(restoring_game)
 	functions_features = loadfile("MPDX/Data/Lua/features.lua")		-- Features
 	functions_features()
 	
+	functions_ladders = loadfile("MPDX/Data/Lua/ladders.lua")		-- Ladders
+	functions_ladders()
+	
 	functions_medias = loadfile("MPDX/Data/Lua/medias.lua")		-- Media
 	functions_medias()
 	
@@ -89,6 +92,7 @@ function Triggers.init(restoring_game)
 	initTerminals()
 	initPanels()
 	initFeatures()
+	initLadders()
 	initMedias()
 	
 end
@@ -126,7 +130,7 @@ function Triggers.idle()
 	fadersIdleUpkeep()
 	playerIdleUpkeep()
 	monstersIdleUpkeep()
-	mediasIdleUpkeep()
+	--mediasIdleUpkeep()
 	featuresIdleUpkeep()
 	
 end
