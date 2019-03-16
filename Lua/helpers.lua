@@ -178,3 +178,171 @@ function getSidePart(side, z) -- Lovingly cribbed from VML (Irons/Smith) [presum
     end
 	
 end
+
+function getAnnotation(key, polygon)
+
+	for a in Annotations() do
+		
+		if a.polygon == polygon and a.text:find(key) then
+			
+			return a
+			
+		end
+		
+	end
+	
+	return false
+	
+end
+
+function getAnnotations(key, polygon)
+
+	polygon = polygon or nil
+	
+	local results = {}
+
+	for a in Annotations() do
+		
+		if a.text:find(key) then
+		
+			if polygon then
+				
+				if a.polygon == polygon then
+			
+					table.insert(results, a)
+					
+				end
+				
+			else
+			
+				table.insert(results, a)
+				
+			end
+			
+		end
+		
+	end
+	
+	if #results == 0 then
+	
+		return false
+		
+	end
+	
+	return results
+	
+end
+
+function getAnnotationContents(key, polygon, index)
+	
+	index = index or nil
+	
+	for a in Annotations() do
+		
+		if a.polygon == polygon and a.text:find(key) then
+			
+			if index then
+				local results = filterCSVLine(a.text)
+				return results[index]
+			else
+				return filterCSVLine(a.text)
+			end
+			
+		end
+		
+	end
+	
+	return false
+	
+end
+
+
+Timers = {}
+
+TimerList = {}
+
+function createTimer(period, repeating, action)
+
+	local timer = Timers:new()
+	
+	timer.period = period - 1
+	timer.repeating = repeating
+	timer.action = action
+	
+	timer.count = period
+	timer.status = "live"
+	
+	table.insert(TimerList, timer)
+	
+	return timer
+	
+end
+
+function Timers:execute()
+
+	self.action()
+
+	if self.repeating then
+	
+		self:reset()
+	
+	else
+		
+		self.status = "dead"
+		
+	end
+	
+end
+
+function Timers:reset()
+	
+	self.count = self.period
+	
+end
+
+function Timers:kill()
+
+	self.status = "dead"
+
+end
+
+function Timers:evaluate()
+
+	if self.status == "dead" then
+		return
+	end
+
+	if self.count <= 0 then
+		self:execute()
+		return
+	end
+	
+	self.count = self.count - 1
+	
+end
+
+function Timers:new()
+	
+	o = {}
+    setmetatable(o, self)
+    self.__index = self
+	return o
+	
+end
+
+function timersIdleUpkeep()
+
+	local newSet = {}
+
+	for i = 1, #TimerList, 1 do
+		
+		TimerList[i]:evaluate()
+		if TimerList[i].status == "live" then
+			table.insert(newSet, TimerList[i])
+		end
+		
+	end
+
+	TimerList = newSet
+	
+end

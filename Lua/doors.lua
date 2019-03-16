@@ -146,6 +146,30 @@ function initDoors()
 	DoorTypes["slide manual r"].closeDelay = -1
 	DoorTypes["slide manual r"].object = "door slide manual"
 	DoorTypes["slide manual r"].offset = 0.21075
+	
+	DoorTypes["elevator l"] = {}
+	DoorTypes["elevator l"].opens = "both"
+	DoorTypes["elevator l"].motion = "slide"
+	DoorTypes["elevator l"].orientation = "left"
+	DoorTypes["elevator l"].halfWidth = 0.25
+	DoorTypes["elevator l"].halfThick = 0.115
+	DoorTypes["elevator l"].hingeAngle = nil
+	DoorTypes["elevator l"].hingeRadius = nil
+	DoorTypes["elevator l"].closeDelay = 180
+	DoorTypes["elevator l"].object = "door elevator"
+	DoorTypes["elevator l"].offset = nil
+	
+	DoorTypes["elevator r"] = {}
+	DoorTypes["elevator r"].opens = "both"
+	DoorTypes["elevator r"].motion = "slide"
+	DoorTypes["elevator r"].orientation = "right"
+	DoorTypes["elevator r"].halfWidth = 0.25
+	DoorTypes["elevator r"].halfThick = 0.115
+	DoorTypes["elevator r"].hingeAngle = nil
+	DoorTypes["elevator r"].hingeRadius = nil
+	DoorTypes["elevator r"].closeDelay = 180
+	DoorTypes["elevator r"].object = "door elevator"
+	DoorTypes["elevator r"].offset = nil
 
 	
 	-- Doorset types --
@@ -205,6 +229,12 @@ function initDoors()
 	DoorSetTypes["slide manual"].doors = {"slide manual l", "slide manual r"}
 	DoorSetTypes["slide manual"].frame = "frame slide manual"
 	DoorSetTypes["slide manual"].collision = nil
+	
+	DoorSetTypes["elevator"] = {}
+	DoorSetTypes["elevator"].class = "double"
+	DoorSetTypes["elevator"].doors = {"elevator l", "elevator r"}
+	DoorSetTypes["elevator"].frame = nil
+	DoorSetTypes["elevator"].collision = nil
 
 	
 	-- Set up doors in map --
@@ -268,6 +298,10 @@ function installDoor(type, parent, enable, lock, keyset)
 	door.object.facing = door.facing
 	door.object:position(door.x, door.y, door.z, door.polygon)
 	door.object._owner = door
+	
+	if type == "elevator l" then
+		door.object.facing = door.object.facing + 180
+	end
 	
 	-- Offset double door positions
 	
@@ -590,17 +624,39 @@ function Doors:start()
 			
 		elseif self.state == "open" then
 			
-			if self.motion == "slide" and Players[0].polygon == self.polygon then
+			local obstructed = false
 			
-				if self.closeDelay then
-					self.closeTimer = self.closeDelay / 2
-					self.polygon:play_sound("cant toggle switch")
-					return
-				else
-					Players[0]:print("You probably shouldn't shut the door on yourself, that would hurt.")
-					return
+			for m in self.polygon:monsters() do
+				
+				if m.polygon == self.polygon and m.type ~= "door daemon" then
+					
+					obstructed = true
+					break
+					
 				end
 				
+			end
+			
+			if obstructed then
+			
+				if self.motion == "slide" then
+			
+					if self.closeDelay then
+						self.closeTimer = self.closeDelay / 2
+						self.polygon:play_sound("cant toggle switch")
+						return
+					else
+						if Players[0].polygon == self.polygon then
+							Players[0]:print("You probably shouldn't shut the door on yourself, that would hurt.")
+							return
+						else
+							Players[0]:print("You can't close the door, there's something in the way.")
+							return
+						end
+					end
+					
+				end
+			
 			end
 			
 			self:noise("close")
@@ -835,16 +891,11 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 	doorSet.lock = lock
 	doorSet.keyset = keyset
 	
-	for a in Annotations() do
-		if a.polygon == polygon and a.text:find("Exit") then
-			local n = filterCSVLine(a.text)
-			
-			doorSet.transit = {}
-			doorSet.transit.level = tonumber(n[2])
-			doorSet.transit.id = tonumber(n[3])
-			
-			break
-		end
+	local exit = getAnnotationContents("Exit", polygon, nil)
+	if exit then
+		doorSet.transit = {}
+		doorSet.transit.level = tonumber(exit[2])
+		doorSet.transit.id = tonumber(exit[3])
 	end
 	
 	-- Create frame
@@ -904,6 +955,19 @@ function installDoorSet(type, x, y, z, polygon, facing, enable, lock, keyset)
 		
 	end
 	
+	-- Elevator Doors
+	if type == "elevator" then
+	
+		local elevatorID = tonumber(getAnnotationContents("Elevator", polygon, 2))
+		
+		if elevatorID then
+			
+			Elevators[elevatorID].door = doorSet
+			
+		end
+		
+	end
+	
 	-- Sliding Auto Door Opener
 	if type == "slide automatic" then
 		local opener = Monsters.new(x, y, z + 0.75, polygon, MonsterTypes["door daemon"])
@@ -935,6 +999,27 @@ function DoorSets:openSesame()
 	
 end
 
+-- Bet you'll never guess what *this* does...
+function DoorSets:closeSesame()
+
+	if not self.enable then
+		return
+	end
+
+	Players.print("Close Sesame!")
+
+	for i = 1, # self.doors, 1 do
+	
+		Players.print(self.doors[i].state)
+	
+		if self.doors[i].state == "open" then
+			self.doors[i]:start()
+		end
+		
+	end
+	
+end
+
 function DoorSets:new()
 
 	o = {}
@@ -955,20 +1040,14 @@ function setupDoorways()
 			-- Center the placeholder in the polygon
 			s:position(s.polygon.x, s.polygon.y, s.polygon.z, s.polygon)
 			
-			local note = {}
+			local note = getAnnotationContents("Door", s.polygon, nil)
 			
 			-- Every door needs an annotation in the same polygon as the placeholder scenery.
 			-- Syntax: "Door, doorset_type, enabled (true/false), locked (inside, outside, both, none), keys (semicolon-separated list)"
 			-- Do not include extra whitespace in any part of your annotation.
-			for a in Annotations() do
-				if a.polygon == s.polygon and a.text:find("Door") then
-					note = filterCSVLine(a.text)
-					break
-				end
-			end
-			
-			if note[1] == "Door" then
-			
+
+			if note then
+
 				local type = note[2]
 				local enabled = note[3] == "true"
 				local locked = note[4] or nil
@@ -976,9 +1055,13 @@ function setupDoorways()
 				if note[5][1] then
 					keyset = note[5]
 				end
-				 
+			 
 				installDoorSet(type, s.x, s.y, s.z, s.polygon, s.facing, enabled, locked, keyset)
 				s:delete()
+				
+			else
+			
+				assert(false, "Couldn't spawn doorway, no annotation found.")
 				
 			end
 			
@@ -992,6 +1075,7 @@ end
 function doorsIdleUpkeep()
 
 	for n = 1, # Doors, 1 do
+
 		if Doors[n].state == "opening" or Doors[n].state == "closing" then
 			Doors[n]:move()
 		elseif Doors[n].state == "open" then

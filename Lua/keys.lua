@@ -34,3 +34,4 @@ function playerHasKey(key)
 	return found
 	
 end
+

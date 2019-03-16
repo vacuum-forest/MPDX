@@ -102,8 +102,6 @@ end
 
 function Ladders:interaction()
 	
-	Players.print("aL: " .. tostring(self.adjacent.p))
-	
 	if Player.ladder.climbing == true then
 		
 		Player.ladder.climbing = false

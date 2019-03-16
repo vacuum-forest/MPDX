@@ -30,6 +30,14 @@ function initPanels()
 	PanelTypes["general"].object.locked = "camera panel"
 	PanelTypes["general"].object.dead = "camera panel damaged"
 	
+	PanelTypes["elevator"] = {}
+	PanelTypes["elevator"].usage = "elevator"
+	PanelTypes["elevator"].object = {}
+	PanelTypes["elevator"].object.active = "camera panel"
+	PanelTypes["elevator"].object.inactive = "camera panel inactive"
+	PanelTypes["elevator"].object.locked = "camera panel"
+	PanelTypes["elevator"].object.dead = "camera panel damaged"
+	
 	setUpPanels()
 	
 end
@@ -44,7 +52,11 @@ function installPanel(name, type, status, target, action, modifier, x, y, height
 	
 	panel.type = PanelTypes[type]
 	panel.status = status
-	panel.target = target
+	if type == "elevator" then
+		panel.target = tonumber(target)
+	else
+		panel.target = target
+	end
 	panel.action = action
 	panel.modifier = modifier
 	panel.facing = facing
@@ -77,6 +89,8 @@ function Panels:interaction()
 
 		if self.type.usage == "camera" then
 			Cams[self.target]:interaction(true)
+		elseif self.type.usage == "elevator" then
+			Elevators[self.target]:interaction()
 		end
 
 	elseif self.status == "dead" then

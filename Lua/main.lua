@@ -1,5 +1,7 @@
 Triggers = {}
 
+Modules = {}
+
 if # Media > 0 then
 	CollectionsUsed = { 11, 21, 23, 24, 25, 26 }
 else
@@ -9,15 +11,6 @@ end
 Game.proper_item_accounting = true
 
 function Triggers.init(restoring_game)
-	
-	-- Push a global here so we can do stuff elsewhere...
-	if restoring_game == true then
-		Game.restore_saved()
-		isSavedGame = true
-	else
-		Game.restore_passed()
-		isSavedGame = false
-	end
 	
 	-- These are just fuzz, TBR...
 	
@@ -33,57 +26,65 @@ function Triggers.init(restoring_game)
 	
 	-- Load up Lua modules
 	
-	functions_scenery = loadfile("MPDX/Data/Lua/scenery.lua")		-- Scenery
+	functions_persistence = loadfile("MPDX/Data/Lua/persistence.lua")	--Persistence Functions
+	functions_persistence()
+	
+	functions_scenery = loadfile("MPDX/Data/Lua/scenery.lua")			-- Scenery Definitions
 	functions_scenery()
 	
-	functions_helpers = loadfile("MPDX/Data/Lua/helpers.lua")		-- Assorted Hors d'oeuvres, helper functions
+	functions_helpers = loadfile("MPDX/Data/Lua/helpers.lua")			-- Assorted Hors d'oeuvres, helper functions
 	functions_helpers()
 	
-	functions_faders = loadfile("MPDX/Data/Lua/faders.lua")			-- Faders
+	functions_faders = loadfile("MPDX/Data/Lua/faders.lua")				-- Faders
 	functions_faders()
 	
-	functions_player = loadfile("MPDX/Data/Lua/player.lua")			-- Player functions, upkeep
+	functions_player = loadfile("MPDX/Data/Lua/player.lua")				-- Player functions, upkeep
 	functions_player()
 	
-	functions_transit = loadfile("MPDX/Data/Lua/transit.lua")		-- Intralevel transit
+	functions_elevators = loadfile("MPDX/Data/Lua/elevators.lua")		-- Elevators
+	functions_elevators()
+	
+	functions_transit = loadfile("MPDX/Data/Lua/transit.lua")			-- Intralevel transit
 	functions_transit()
 	
-	functions_doors = loadfile("MPDX/Data/Lua/doors.lua")			-- Doors
+	functions_doors = loadfile("MPDX/Data/Lua/doors.lua")				-- Doors
 	functions_doors()
 	
-	functions_monsters = loadfile("MPDX/Data/Lua/monsters.lua")		-- Monsters
+	functions_monsters = loadfile("MPDX/Data/Lua/monsters.lua")			-- Monsters
 	functions_monsters()
 	
-	functions_cameras = loadfile("MPDX/Data/Lua/cameras.lua")		-- Cameras
+	functions_cameras = loadfile("MPDX/Data/Lua/cameras.lua")			-- Cameras
 	functions_cameras()
 	
-	functions_keys = loadfile("MPDX/Data/Lua/keys.lua")				-- Keys and other access control
+	functions_keys = loadfile("MPDX/Data/Lua/keys.lua")					-- Keys and other access control
 	functions_keys()
 	
-	functions_terminals = loadfile("MPDX/Data/Lua/terminals.lua")	-- Terminals
+	functions_terminals = loadfile("MPDX/Data/Lua/terminals.lua")		-- Terminals
 	functions_terminals()
 	
-	functions_panels = loadfile("MPDX/Data/Lua/panels.lua")		-- Switches
+	functions_panels = loadfile("MPDX/Data/Lua/panels.lua")				-- Switches
 	functions_panels()
 	
-	functions_motions = loadfile("MPDX/Data/Lua/motions.lua")		-- Motions
+	functions_motions = loadfile("MPDX/Data/Lua/motions.lua")			-- Motions
 	functions_motions()
 	
-	functions_features = loadfile("MPDX/Data/Lua/features.lua")		-- Features
+	functions_features = loadfile("MPDX/Data/Lua/features.lua")			-- Features
 	functions_features()
 	
-	functions_ladders = loadfile("MPDX/Data/Lua/ladders.lua")		-- Ladders
+	functions_ladders = loadfile("MPDX/Data/Lua/ladders.lua")			-- Ladders
 	functions_ladders()
 	
-	functions_medias = loadfile("MPDX/Data/Lua/medias.lua")		-- Media
+	functions_medias = loadfile("MPDX/Data/Lua/medias.lua")				-- Media
 	functions_medias()
 	
 	-- Initialize tables (in the proper order!)
 	
+	initPersistence(restoring_game)
 	initScenery()
 	initFaders()
 	initPlayer()
 	initKeys()
+	initElevators()
 	initTransit()
 	initScenery()
 	initMonsters()
@@ -128,10 +129,12 @@ end
 function Triggers.idle()
 	
 	fadersIdleUpkeep()
+	timersIdleUpkeep()
 	playerIdleUpkeep()
 	monstersIdleUpkeep()
-	--mediasIdleUpkeep()
+	mediasIdleUpkeep()
 	featuresIdleUpkeep()
+	elevatorsIdleUpkeep()
 	
 end
 

@@ -64,18 +64,9 @@ function Features.switches.installSwitch(polygon, side)
 	switch.key = nil
 	switch.subtype = nil
 	
-	for a in Annotations() do
-		
-		if a.polygon == polygon and a.text:find("Key") then
-			
-			local n = filterCSVLine(a.text)
-
-			switch.key = n[2]
-
-			break
-			
-		end
-		
+	local key = getAnnotationContents("Key", polygon, 2)
+	if key then
+		switch.key = key
 	end
 	
 	if polygon.type == "platform on trigger" then
@@ -88,6 +79,30 @@ function Features.switches.installSwitch(polygon, side)
 		else
 			switch.subtype = "power"
 		end
+		
+	elseif polygon.type == "glue trigger" then
+		
+		for a in Annotations() do
+		
+			if a.polygon == polygon then 
+				
+				if a.text:find("Elevator") then
+			
+					switch.type = "elevator"
+				
+					note = filterCSVLine(a.text)
+				
+					switch.target = tonumber(note[2])
+					
+					Elevators[switch.target].switch = switch
+
+					break
+				
+				end
+			
+			end
+		
+		end
 	
 	end
 	
@@ -99,11 +114,15 @@ end
 
 function Switches:interaction()
 
+	Players.print(self.type)
+
 	if self.key then
 		
 		if not playerHasKey(self.key) then
 			
 			Players.print("It's locked.")
+			
+			self.side:play_sound(Sounds["cant toggle switch"])
 			
 			return
 			
@@ -123,17 +142,17 @@ function Switches:interaction()
 		
 			local platform = Platforms[self.target]
 
+			self.side:play_sound(Sounds["switch on"])
+
 			if self.subtype == "power" then
 
 				if platform.active then
 			
 					platform.active = false
-					self.side:play_sound(Sounds["switch off"])
 			
 				else
 			
 					platform.active = true
-					self.side:play_sound(Sounds["switch on"])
 			
 				end
 				
@@ -142,7 +161,6 @@ function Switches:interaction()
 				if not platform.active then
 				
 					platform.active = true
-					self.side:play_sound(Sounds["switch on"])
 					
 				else
 					
@@ -162,6 +180,13 @@ function Switches:interaction()
 				
 			end
 		
+		end
+		
+		if self.type == "elevator" then
+		
+			Players.print("Summoning elevator " .. tostring(self.target))
+			Elevators[self.target]:summon()
+			
 		end
 		
 		return
@@ -256,6 +281,18 @@ function featuresIdleUpkeep()
 						end
 					end
 					
+				end
+				
+			end
+			
+			if v.type == "elevator" then
+			
+				local e = Elevators[v.target]
+				
+				if e.status == "inactive" then
+					v.side.transparent.texture_index = 1
+				else
+					v.side.transparent.texture_index = 0
 				end
 				
 			end

@@ -10,7 +10,7 @@ function initTransit()
 
 	setupStartPoints()
 	
-	if Player.me._intralevel_destination and not isSavedGame then
+	if Player.me._intralevel_destination and not Persistence.restored_from_saved then
 		
 		for s = 1, # playerStarts, 1 do
 			if playerStarts[s].id == Player.me._intralevel_destination then
@@ -36,6 +36,22 @@ function setupStartPoints()
 			local facing = tonumber(n[4])
 			installStartPoint(id, a.x, a.y, z, a.polygon, facing)
 		end
+	end
+	
+	for i = 1, #Elevators, 1 do
+
+		local e = Elevators[i]
+	
+		if not e:hasLevel(Level.index) then
+			return
+		end
+	
+		local id = "elevator " .. tostring(i)
+		
+		local p = e.polygon
+		
+		installStartPoint(id, p.x, p.y, p.z, p, e.facing)
+		
 	end
 
 end
@@ -79,9 +95,6 @@ end
 function levelTransition(target)
 
 	Player.me._intralevel_destination = target.id
-	
-	--freeze level
-	--fade
 	
 	Player.me:teleport_to_level(target.level)
 	
