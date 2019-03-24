@@ -65,11 +65,7 @@ function initElevators()
 
 	setmetatable(Elevators[2], {__index = Elevators})
 
-	if Game._elevators then
-		restoreElevatorStates()
-	end
-
-	for i = 1, #Elevators, 1 do
+	for i = 1, # Elevators, 1 do
 
 		local e = Elevators[i]
 		
@@ -92,15 +88,11 @@ end
 
 function Elevators:summon()
 
-	Players.print("Summoning!")
-	Players.print("CFloor: " .. tostring(self.currentFloor))
-	Players.print("DFloor: " .. tostring(self.desiredFloor))
-
 	if self.status == "active" then
 		return
 	end
 	
-	for i = 1, #self.floors, 1 do
+	for i = 1, # self.floors, 1 do
 		if self.floors[i].level == Level.index then
 			self.desiredFloor = i
 			break
@@ -148,15 +140,12 @@ function Elevators:dispatch(floor)
 	
 	self.desiredFloor = floor
 	self.interval = math.abs(self.desiredFloor - self.currentFloor) * 300
-	Players.print(self.interval)
 	
 	self.status = "active"
 	
 	local target = {}
 	target.level = self.floors[self.desiredFloor].level
 	target.id = self.id
-	
-	storeElevatorData()
 	
 	levelTransition(target)
 	
@@ -172,25 +161,25 @@ function Elevators:interaction()
 		
 	end
 	
-	createTimer(90, false, action)
+	createTimer(60, false, action)
 
 end
 
 function Elevators:hasLevel(level)
 
-	for i = 1, #self.floors, 1 do
+	for i = 1, # self.floors, 1 do
 		if self.floors[i].level == level then
 			return true
 		end
 	end
 	
-	return
+	return false
 	
 end
 
 function elevatorsIdleUpkeep()
 
-	for i = 1, #Elevators, 1 do
+	for i = 1, # Elevators, 1 do
 
 		local e = Elevators[i]
 
@@ -219,27 +208,6 @@ function elevatorsIdleUpkeep()
 	
 		end
 
-	end
-	
-end
-
-function storeElevatorData()
-
-	Game._elevators = Elevators
-	
-end
-
-function restoreElevatorStates()
-	
-	for i = 1, #Game._elevators, 1 do
-		
-		local e = Game._elevators[i]
-		
-		Elevators[i].status = e.status
-		Elevators[i].currentFloor = e.currentFloor
-		Elevators[i].desiredFloor = e.desiredFloor
-		Elevators[i].interval = e.interval
-		
 	end
 	
 end

@@ -122,7 +122,7 @@ function Ladders:interaction()
 		height = Player.me.z
 	end
 
-	motions.transit.after = function ()	
+	motions.transit.after = function ()
 		Player.ladder.id = self
 		Player.ladder.z = Player.me.z
 		Player.ladder.climbing = true

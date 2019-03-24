@@ -205,16 +205,6 @@ function playerPDamagedUpkeep(victim, aggressor_player, aggressor_monster, damag
 			Player.me:fade_screen("flash")
 		end
 		
-		--[[
-		if bearing < 0 then
-			bearing = bearing + 360
-		end
-		local side = (bearing + 90) % 360
-		if side <= 180 then
-			Player.me:fade_screen("flash")
-		end
-		]]
-		
 	end
 	
 	if damage_amount * 1000 < Player.parameters.HP.target + 5000 then

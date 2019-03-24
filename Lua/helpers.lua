@@ -223,7 +223,7 @@ function getAnnotations(key, polygon)
 		
 	end
 	
-	if #results == 0 then
+	if # results == 0 then
 	
 		return false
 		
@@ -334,7 +334,7 @@ function timersIdleUpkeep()
 
 	local newSet = {}
 
-	for i = 1, #TimerList, 1 do
+	for i = 1, # TimerList, 1 do
 		
 		TimerList[i]:evaluate()
 		if TimerList[i].status == "live" then

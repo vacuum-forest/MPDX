@@ -10,6 +10,10 @@ end
 
 Game.proper_item_accounting = true
 
+if not Game._persistences then
+	Game._persistences = {}
+end
+
 function Triggers.init(restoring_game)
 	
 	-- These are just fuzz, TBR...
@@ -77,6 +81,9 @@ function Triggers.init(restoring_game)
 	functions_medias = loadfile("MPDX/Data/Lua/medias.lua")				-- Media
 	functions_medias()
 	
+	functions_rooms = loadfile("MPDX/Data/Lua/rooms.lua")				-- Rooms
+	functions_rooms()
+	
 	-- Initialize tables (in the proper order!)
 	
 	initPersistence(restoring_game)
@@ -95,6 +102,9 @@ function Triggers.init(restoring_game)
 	initFeatures()
 	initLadders()
 	initMedias()
+	initRooms()
+	
+	restorePersistence()
 	
 end
 
@@ -128,6 +138,8 @@ end
 
 function Triggers.idle()
 	
+	Players[0].overlays[1].text = getPlayerRoom()
+	
 	fadersIdleUpkeep()
 	timersIdleUpkeep()
 	playerIdleUpkeep()
@@ -152,5 +164,6 @@ end
 
 function Triggers.cleanup()
 
+	cleanupPersistence()
 	
 end

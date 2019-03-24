@@ -38,7 +38,7 @@ function setupStartPoints()
 		end
 	end
 	
-	for i = 1, #Elevators, 1 do
+	for i = 1, # Elevators, 1 do
 
 		local e = Elevators[i]
 	

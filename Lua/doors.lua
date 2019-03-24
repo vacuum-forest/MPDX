@@ -148,7 +148,7 @@ function initDoors()
 	DoorTypes["slide manual r"].offset = 0.21075
 	
 	DoorTypes["elevator l"] = {}
-	DoorTypes["elevator l"].opens = "both"
+	DoorTypes["elevator l"].opens = "none"
 	DoorTypes["elevator l"].motion = "slide"
 	DoorTypes["elevator l"].orientation = "left"
 	DoorTypes["elevator l"].halfWidth = 0.25
@@ -160,7 +160,7 @@ function initDoors()
 	DoorTypes["elevator l"].offset = nil
 	
 	DoorTypes["elevator r"] = {}
-	DoorTypes["elevator r"].opens = "both"
+	DoorTypes["elevator r"].opens = "none"
 	DoorTypes["elevator r"].motion = "slide"
 	DoorTypes["elevator r"].orientation = "right"
 	DoorTypes["elevator r"].halfWidth = 0.25
@@ -758,6 +758,83 @@ function Doors:canUnlock()
 	end
 	
 	return false
+	
+end
+
+function Doors:setState(state)
+
+	if self.type.motion == "swing" then
+		
+		local angle
+		
+		if state == "open" then
+			
+			angle = self.openAngle
+			
+		else
+			
+			angle = self.closedAngle
+			
+		end
+
+		self.facing = angle
+		
+		--Start
+		local dx, dy, dt
+		
+		if self.orientation == "right" then
+			dt = self.facing + 90 + self.hingeAngle
+		else
+			dt = self.facing - 90 - self.hingeAngle
+		end
+		
+		dx, dy = radToCart(dt, self.hingeRadius)
+		--End
+		
+		self.x = dx + self.hingeX
+		self.y = dy + self.hingeY
+		
+		-- Pass updates to scenery object
+		self.object.facing = self.facing
+		self.object:position(self.x, self.y, self.z, self.polygon)
+		
+	else
+		
+		local x, y
+		
+		if state == "open" then
+			x = self.xOpen
+			y = self.yOpen
+		else
+			x = self.xClosed
+			y = self.yClosed
+		end
+		
+		self.object:position(self.x, self.y, self.z, self.polygon)
+		
+	end
+
+	self.state = state
+
+	self:updateColliders()
+	
+	-- Update door object polygon for superior rendering!
+	for p in Polygons() do
+		if p:contains(self.x, self.y) then
+			if self.z < p.ceiling.z and self.z >= p.floor.z then
+				self.polygon = p
+				self.object:position(self.x, self.y, self.z, self.polygon)
+				break
+			end
+		end
+	end
+	
+	--Update polygon type to restrict/allow monster pathing through a door
+	if self.state == "open" then
+		self.parent.polygon.type = PolygonTypes["normal"]
+	elseif self.state == "closed" then
+		self.parent.polygon.type = PolygonTypes["monster impassable"]
+	end
 	
 end
 

@@ -67,13 +67,17 @@ end
 
 function Medias.updateFog()
 	
-	local media = Player.me.polygon.media.type._details
-	local floorLight = Player.me.polygon.floor.light.intensity
-	local depthMod = 1.5 / math.max(1.5, heightToSurface())
+	if Player.me.polygon.media then
 	
-	Level.underwater_fog.color.r = media.haze.r * floorLight * depthMod
-	Level.underwater_fog.color.g = media.haze.g * floorLight * depthMod
-	Level.underwater_fog.color.b = media.haze.b * floorLight * depthMod
-	Level.underwater_fog.depth = math.max(media.haze.d.max * (1 - floorLight) * depthMod, media.haze.d.min)
+		local media = Player.me.polygon.media.type._details
+		local floorLight = Player.me.polygon.floor.light.intensity
+		local depthMod = 1.5 / math.max(1.5, heightToSurface())
+	
+		Level.underwater_fog.color.r = media.haze.r * floorLight * depthMod
+		Level.underwater_fog.color.g = media.haze.g * floorLight * depthMod
+		Level.underwater_fog.color.b = media.haze.b * floorLight * depthMod
+		Level.underwater_fog.depth = math.max(media.haze.d.max * (1 - floorLight) * depthMod, media.haze.d.min)
+
+	end
 
 end
