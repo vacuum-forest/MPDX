@@ -1,0 +1,189 @@
+<marathon>
+
+<opengl>
+
+	<!-- Robot Vacuums -->
+	
+	<!-- 0: Vacuum Idle -->
+	
+	<model coll="3" seq="0" file="Objects/Monsters/Robovac/robot_vacuum_1.obj" type="obj" light_type="0" scale="128" x_rot="0" y_rot="0" z_rot="180" depth_type="0" norm_split="0.9">
+		<skin clut="0" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" />
+		<skin clut="1" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" />
+		<skin clut="2" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" />
+	</model>
+	
+	<!-- 1: Vacuum Active -->
+	
+	<model coll="3" seq="1" file="Objects/Monsters/Robovac/robot_vacuum_1.obj" type="obj" light_type="0" scale="128" x_rot="0" y_rot="0" z_rot="180" depth_type="0" norm_split="0.9">
+		<skin clut="0" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" glow_image="Objects/Monsters/Robovac/robot_vacuum_2ga.png" />
+		<skin clut="1" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" glow_image="Objects/Monsters/Robovac/robot_vacuum_2gb.png" />
+		<skin clut="2" normal_image="Objects/Monsters/Robovac/robot_vacuum_1n.png" glow_image="Objects/Monsters/Robovac/robot_vacuum_2gc.png" />
+	</model>
+	
+	<!-- 2: Vacuum Dying -->
+
+	<model coll="3" seq="2" file="Objects/Monsters/Robovac/robot_vacuum_2.obj" type="obj" light_type="0" scale="128" x_rot="0" y_rot="0" z_rot="180" depth_type="0" norm_split="0.9">
+		<skin clut="0" normal_image="Objects/Monsters/Robovac/robot_vacuum_2n.png" />
+		<skin clut="1" normal_image="Objects/Monsters/Robovac/robot_vacuum_2n.png" />
+		<skin clut="2" normal_image="Objects/Monsters/Robovac/robot_vacuum_2n.png" />
+	</model>
+
+	<!-- 3: Vacuum Dead -->
+	<!--
+	<model coll="3" seq="3" file="Objects/Monsters/Robovac/robot_vacuum_3.obj" type="obj" light_type="0" scale="128" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Robovac/robot_vacuum_3n.png" />
+	</model>
+	-->
+	<!-- Sentry Turrets -->
+
+	<!-- 0: Camera Idle -->
+
+	<model coll="12" seq="0" file="Objects/Monsters/Sentry/turret_camera_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_camera_1n.png" glow_image="Objects/Monsters/Sentry/turret_camera_1g.png" />
+	</model>
+	
+	
+	<!-- 1: Dart Idle -->
+	
+	<model coll="12" seq="1" file="Objects/Monsters/Sentry/turret_dart_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_dart_1n.png" glow_image="Objects/Monsters/Sentry/turret_dart_1g.png" />
+	</model>
+	
+	
+	<!-- 2: Gun Idle -->
+	
+	<model coll="12" seq="2" file="Objects/Monsters/Sentry/turret_gun_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_gun_1n.png" glow_image="Objects/Monsters/Sentry/turret_gun_1g.png" />
+	</model>
+	
+	
+	<!-- 3: Camera Firing -->
+
+	<model coll="12" seq="3" file="Objects/Monsters/Sentry/turret_camera_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_camera_1n.png" glow_image="Objects/Monsters/Sentry/turret_camera_1f.png" />
+	</model>
+	
+	
+	<!-- 4: Dart Firing -->
+	
+	<model coll="12" seq="4" file="Objects/Monsters/Sentry/turret_dart_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_dart_1n.png" glow_image="Objects/Monsters/Sentry/turret_dart_1f.png" />
+	</model>
+	
+	
+	<!-- 5: Gun Firing -->
+	
+	<model coll="12" seq="5" file="Objects/Monsters/Sentry/turret_gun_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_gun_1n.png" glow_image="Objects/Monsters/Sentry/turret_gun_1f.png" />
+	</model>
+	
+
+	<!-- 6: Dying -->
+	
+	<model coll="12" seq="6" file="Objects/Monsters/Sentry/turret_dead_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_dead_1n.png" />
+	</model>	
+	
+	
+	<!-- 7: Dead -->
+	
+	<model coll="12" seq="7" file="Objects/Monsters/Sentry/turret_dead_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_dead_1n.png" />
+	</model>	
+	
+	
+	<!-- Scenery: Turret Base -->
+	
+	<model coll="12" seq="8" file="Objects/Monsters/Sentry/turret_base_1.obj" type="obj" light_type="0" scale="1024" x_rot="0" y_rot="180" z_rot="0" depth_type="+" norm_split="0.9">
+		<skin clut="-1" normal_image="Objects/Monsters/Sentry/turret_base_1n.png" />
+	</model>
+	
+	
+	<!-- Turret Camera Flash -->
+	
+	<texture coll="4" bitmap="87"
+	normal_image="Objects/Monsters/Sentry/Flash/0.png"
+	glow_image="Objects/Monsters/Sentry/Flash/0.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="88"
+	normal_image="Objects/Monsters/Sentry/Flash/1.png"
+	glow_image="Objects/Monsters/Sentry/Flash/1.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="89"
+	normal_image="Objects/Monsters/Sentry/Flash/2.png"
+	glow_image="Objects/Monsters/Sentry/Flash/2.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="90"
+	normal_image="Objects/Monsters/Sentry/Flash/3.png"
+	glow_image="Objects/Monsters/Sentry/Flash/3.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="91"
+	normal_image="Objects/Monsters/Sentry/Flash/4.png"
+	glow_image="Objects/Monsters/Sentry/Flash/4.png"
+	opac_type="1"
+	/>
+	
+	
+	<!-- Turret Dart Poof -->
+	
+	<texture coll="4" bitmap="92"
+	normal_image="Objects/Monsters/Sentry/Dart/0.png"
+	glow_image="Objects/Monsters/Sentry/Dart/0.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="93"
+	normal_image="Objects/Monsters/Sentry/Dart/1.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="94"
+	normal_image="Objects/Monsters/Sentry/Dart/2.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="95"
+	normal_image="Objects/Monsters/Sentry/Dart/3.png"
+	opac_type="1"
+	/>
+	
+	<!-- Turret Gun Pow -->
+	
+	<texture coll="4" bitmap="96"
+	normal_image="Objects/Monsters/Sentry/Pow/0.png"
+	glow_image="Objects/Monsters/Sentry/Pow/0.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="97"
+	normal_image="Objects/Monsters/Sentry/Pow/1.png"
+	glow_image="Objects/Monsters/Sentry/Pow/1.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="98"
+	normal_image="Objects/Monsters/Sentry/Pow/2.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="99"
+	normal_image="Objects/Monsters/Sentry/Pow/3.png"
+	opac_type="1"
+	/>
+	
+	<texture coll="4" bitmap="100"
+	normal_image="Objects/Monsters/Sentry/Pow/4.png"
+	opac_type="1"
+	/>
+
+</opengl>
+
+</marathon>
